@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "reflect-client",
+  "version": "${version}",
+  "name": "Reflect Client",
+  "description": "Client-side mod for Reflect Engine MMORPG",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/reflect-client/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.reflect.client.ReflectClient"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.11",
+    "java": ">=25"
+  }
+}
