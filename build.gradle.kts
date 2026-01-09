@@ -1,10 +1,10 @@
 plugins {
-    id("fabric-loom") version "1.9-SNAPSHOT"
+    id("fabric-loom") version "1.14-SNAPSHOT"
     `java-library`
 }
 
 version = "1.0.0"
-group = "net.reflect"
+group = "net.reflact"
 
 repositories {
     mavenCentral()
@@ -12,14 +12,14 @@ repositories {
 
 dependencies {
     // Minecraft and mappings
-    minecraft("com.mojang:minecraft:1.21.11") // Update to match Minestom protocol
-    mappings("net.fabricmc:yarn:1.21.11+build.1:v2") // Update to match MC version
+    minecraft("com.mojang:minecraft:1.21.11")
+    mappings(loom.officialMojangMappings())
 
     // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:0.16.9")
 
     // Fabric API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.115.0+1.21.11")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:+")
 }
 
 java {

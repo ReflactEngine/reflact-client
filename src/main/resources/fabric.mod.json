@@ -1,20 +1,22 @@
 {
   "schemaVersion": 1,
-  "id": "reflect-client",
+  "id": "reflact-client",
   "version": "${version}",
-  "name": "Reflect Client",
-  "description": "Client-side mod for Reflect Engine MMORPG",
+  "name": "Reflact Client",
+  "description": "Client-side mod for Reflact Engine MMORPG",
   "authors": [],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/reflect-client/icon.png",
+  "icon": "assets/reflact-client/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "net.reflect.client.ReflectClient"
+      "net.reflact.client.ReflactClient"
     ]
   },
-  "mixins": [],
+  "mixins": [
+    "reflact-client.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.9",
     "minecraft": "~1.21.11",
