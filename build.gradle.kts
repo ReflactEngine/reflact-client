@@ -20,7 +20,7 @@ dependencies {
     mappings("net.fabricmc:yarn:1.21.11+build.3:v2")
     
     // Fabric Loader
-    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+    modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
     // Fabric API
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
