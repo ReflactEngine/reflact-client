@@ -1,5 +1,6 @@
 plugins {
-    id("fabric-loom") version "1.14-SNAPSHOT"
+    // Use the remap plugin for obfuscated versions like 1.21.11
+    id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT"
     `java-library`
 }
 
@@ -8,24 +9,32 @@ group = "net.reflact"
 
 repositories {
     mavenCentral()
+    maven("https://maven.fabricmc.net/")
 }
 
 dependencies {
-    // Minecraft and mappings
+    // Minecraft
     minecraft("com.mojang:minecraft:1.21.11")
-    mappings(loom.officialMojangMappings())
 
+    // Use Official Mojang Mappings
+    mappings("net.fabricmc:yarn:1.21.11+build.3:v2")
+    
     // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:0.16.9")
 
     // Fabric API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:+")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
 }
 
 java {
     toolchain {
+        // Java 25 is supported in Loom 1.14+
         languageVersion.set(JavaLanguageVersion.of(25))
     }
+}
+
+loom {
+    enableTransitiveAccessWideners.set(false)
 }
 
 tasks.processResources {
