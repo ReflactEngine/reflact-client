@@ -51,10 +51,12 @@ public class ReflactClient implements ClientModInitializer {
 
         // 1. Register Payload Types
         PayloadTypeRegistry.playS2C().register(ManaPayload.ID, ManaPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CastPayload.ID, CastPayload.CODEC);
 
         // 2. HUD
         HudRenderCallback.EVENT.register(new ReflactHud());
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register(new net.reflact.client.hud.RpgTooltipRenderer());
 
         // 3. Networking Receiver
         ClientPlayNetworking.registerGlobalReceiver(ManaPayload.ID, (payload, context) -> {
@@ -62,6 +64,8 @@ public class ReflactClient implements ClientModInitializer {
                 ClientData.currentMana = payload.mana();
             });
         });
+        
+        net.reflact.client.network.ClientNetworkManager.init();
 
         // 4. Keybinds (FIXED for 1.21.11)
         // Category now requires an Identifier object, e.g. "reflact:general"
