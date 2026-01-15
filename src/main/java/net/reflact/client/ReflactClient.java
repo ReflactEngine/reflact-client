@@ -24,64 +24,33 @@ public class ReflactClient implements ClientModInitializer {
     // Keybindings
     private static KeyBinding castFireballKey;
 
-    // Define Custom Payloads (Networking 1.21+ API)
-    public record ManaPayload(double mana) implements CustomPayload {
-        public static final CustomPayload.Id<ManaPayload> ID = new CustomPayload.Id<>(Identifier.of("reflact", "mana"));
-        public static final PacketCodec<RegistryByteBuf, ManaPayload> CODEC = PacketCodec.tuple(
-            PacketCodecs.DOUBLE, ManaPayload::mana,
-            ManaPayload::new
-        );
-        @Override
-        public CustomPayload.Id<? extends CustomPayload> getId() { return ID; }
-    }
-
-    public record CastPayload(String spellId) implements CustomPayload {
-        public static final CustomPayload.Id<CastPayload> ID = new CustomPayload.Id<>(Identifier.of("reflact", "cast"));
-        public static final PacketCodec<RegistryByteBuf, CastPayload> CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, CastPayload::spellId,
-            CastPayload::new
-        );
-        @Override
-        public CustomPayload.Id<? extends CustomPayload> getId() { return ID; }
-    }
-
     @Override
     public void onInitializeClient() {
         LOGGER.info("Reflact Client initialized!");
 
         // 1. Register Payload Types
-        PayloadTypeRegistry.playS2C().register(ManaPayload.ID, ManaPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(CastPayload.ID, CastPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
 
         // 2. HUD
         HudRenderCallback.EVENT.register(new ReflactHud());
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register(new net.reflact.client.hud.RpgTooltipRenderer());
 
         // 3. Networking Receiver
-        ClientPlayNetworking.registerGlobalReceiver(ManaPayload.ID, (payload, context) -> {
-            context.client().execute(() -> {
-                ClientData.currentMana = payload.mana();
-            });
-        });
-        
         net.reflact.client.network.ClientNetworkManager.init();
 
         // 4. Keybinds (FIXED for 1.21.11)
-        // Category now requires an Identifier object, e.g. "reflact:general"
         castFireballKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.reflact.cast_fireball",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_R,
-                new KeyBinding.Category(Identifier.of("reflact", "general")) // Fixed here
+                new KeyBinding.Category(Identifier.of("reflact", "general"))
         ));
 
         // 5. Input Handling
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (castFireballKey.wasPressed()) {
-                if (ClientPlayNetworking.canSend(CastPayload.ID)) {
-                    ClientPlayNetworking.send(new CastPayload("fireball"));
-                }
+                net.reflact.client.network.ClientNetworkManager.sendPacket(new net.reflact.client.network.packet.CastSpellPacket("fireball"));
             }
         });
     }

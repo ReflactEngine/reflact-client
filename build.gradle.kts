@@ -43,3 +43,12 @@ tasks.processResources {
         expand("version" to project.version)
     }
 }
+
+tasks.register<Copy>("copyToInstance") {
+    dependsOn(tasks.remapJar)
+    from(tasks.remapJar.get().archiveFile)
+    into("/home/remgr/.local/share/PrismLauncher/instances/1.21.11/minecraft/mods")
+    doLast {
+        println("Copied mod to PrismLauncher instance.")
+    }
+}
