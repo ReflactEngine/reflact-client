@@ -53,5 +53,3 @@ tasks.register<Copy>("copyToInstance") {
     }
 }
 
-// test
-
