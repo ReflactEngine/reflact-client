@@ -18,7 +18,7 @@ dependencies {
 
     // Use Official Mojang Mappings
     mappings("net.fabricmc:yarn:1.21.11+build.3:v2")
-    
+
     // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
@@ -52,3 +52,6 @@ tasks.register<Copy>("copyToInstance") {
         println("Copied mod to PrismLauncher instance.")
     }
 }
+
+// test
+
