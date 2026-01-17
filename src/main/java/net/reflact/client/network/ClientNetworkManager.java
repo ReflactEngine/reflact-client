@@ -3,24 +3,19 @@ package net.reflact.client.network;
 import com.google.gson.Gson;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.reflact.client.ClientData;
-import net.reflact.client.network.packet.CastSpellPacket;
-import net.reflact.client.network.packet.ManaUpdatePacket;
-import net.reflact.client.network.packet.ReflactPacket;
+import net.reflact.common.network.PacketRegistry;
+import net.reflact.common.network.packet.CastSpellPacket;
+import net.reflact.common.network.packet.ManaUpdatePacket;
+import net.reflact.common.network.packet.ReflactPacket;
+import net.reflact.common.network.packet.S2CSyncItemPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientNetworkManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("ReflactNet");
     private static final Gson gson = new Gson();
-    private static final Map<String, Class<? extends ReflactPacket>> registry = new HashMap<>();
 
     public static void init() {
-        register("mana_update", ManaUpdatePacket.class);
-        register("sync_item", net.reflact.client.network.packet.S2CSyncItemPacket.class);
-        
         ClientPlayNetworking.registerGlobalReceiver(ReflactJsonPayload.ID, (payload, context) -> {
             String data = payload.data();
             int splitIndex = data.indexOf(":");
@@ -33,12 +28,8 @@ public class ClientNetworkManager {
         });
     }
 
-    public static void register(String id, Class<? extends ReflactPacket> clazz) {
-        registry.put(id, clazz);
-    }
-
     private static void handlePacket(String id, String json) {
-        Class<? extends ReflactPacket> clazz = registry.get(id);
+        Class<? extends ReflactPacket> clazz = PacketRegistry.get(id);
         if (clazz == null) {
             LOGGER.warn("Unknown packet ID: {}", id);
             return;
@@ -54,13 +45,19 @@ public class ClientNetworkManager {
 
     private static void processPacket(ReflactPacket packet) {
         if (packet instanceof ManaUpdatePacket manaPacket) {
-            ClientData.currentMana = manaPacket.getMana();
+            ClientData.currentMana = manaPacket.currentMana();
+        } else if (packet instanceof S2CSyncItemPacket syncPacket) {
+            net.reflact.client.managers.ClientItemManager.cacheItem(syncPacket.item());
         }
-        // Add more handlers here
     }
 
     public static void sendPacket(ReflactPacket packet) {
-        String data = packet.getPacketId() + ":" + packet.toJson();
+        String id = PacketRegistry.getId(packet.getClass());
+        if (id == null) {
+            LOGGER.warn("Tried to send unregistered packet: {}", packet.getClass().getName());
+            return;
+        }
+        String data = id + ":" + gson.toJson(packet);
         if (ClientPlayNetworking.canSend(ReflactJsonPayload.ID)) {
             ClientPlayNetworking.send(new ReflactJsonPayload(data));
         }

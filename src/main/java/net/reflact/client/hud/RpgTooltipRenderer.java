@@ -9,8 +9,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
-import net.reflact.client.item.RpgItem;
 import net.reflact.client.managers.ClientItemManager;
+import net.reflact.common.item.CustomItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class RpgTooltipRenderer implements ItemTooltipCallback {
             return;
         }
         
-        RpgItem rpgItem = ClientItemManager.getItem(uuid);
+        CustomItem rpgItem = ClientItemManager.getItem(uuid);
         if (rpgItem == null) return;
         
         // RENDER RPG TOOLTIP
@@ -54,7 +54,7 @@ public class RpgTooltipRenderer implements ItemTooltipCallback {
         // Let's keep the name but re-style it
         
         // Name with Tier Color
-        lines.add(Text.literal(rpgItem.getDisplayName()).styled(style -> style.withColor(rpgItem.getTier().getColor())));
+        lines.add(Text.literal(rpgItem.getName()).styled(style -> style.withColor(rpgItem.getTier().getColor())));
         
         // Tier & Type
         lines.add(Text.literal(rpgItem.getTier().getDisplayName() + " " + rpgItem.getType().name())
@@ -77,12 +77,12 @@ public class RpgTooltipRenderer implements ItemTooltipCallback {
             lines.add(Text.empty());
         }
         
-        // Requirements
-        if (rpgItem.getLevelRequirement() > 0) {
-            lines.add(Text.literal("Level Min: " + rpgItem.getLevelRequirement()).formatted(Formatting.GRAY));
+        // Requirements (using metadata)
+        if (rpgItem.getMeta("level_req") != null) {
+            lines.add(Text.literal("Level Min: " + rpgItem.getMeta("level_req")).formatted(Formatting.GRAY));
         }
-        if (rpgItem.getClassRequirement() != null) {
-            lines.add(Text.literal("Class Req: " + rpgItem.getClassRequirement()).formatted(Formatting.GRAY));
+        if (rpgItem.getMeta("class_req") != null) {
+            lines.add(Text.literal("Class Req: " + rpgItem.getMeta("class_req")).formatted(Formatting.GRAY));
         }
         
         lines.add(Text.empty());
@@ -93,10 +93,6 @@ public class RpgTooltipRenderer implements ItemTooltipCallback {
                 lines.add(Text.literal(loreLine).formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
             }
         }
-        
-        // Debug UUID
-        // Item.TooltipContext doesn't have isAdvanced() directly usually? 
-        // Actually it might just be the interface. Let's omit debug for now or assume safe.
     }
     
     private String formatAttrName(String key) {

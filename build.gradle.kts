@@ -10,9 +10,13 @@ group = "net.reflact"
 repositories {
     mavenCentral()
     maven("https://maven.fabricmc.net/")
+    maven("https://maven.wispforest.io")
+    maven("https://jitpack.io")
 }
 
 dependencies {
+    implementation(project(":common"))
+    include(project(":common"))
     // Minecraft
     minecraft("com.mojang:minecraft:1.21.11")
 

@@ -14,6 +14,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.reflact.client.hud.ReflactHud;
+import net.reflact.common.network.packet.CastSpellPacket;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class ReflactClient implements ClientModInitializer {
         PayloadTypeRegistry.playC2S().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
 
         // 2. HUD
-        HudRenderCallback.EVENT.register(new ReflactHud());
+        net.reflact.client.hud.ReflactHud.initialize();
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register(new net.reflact.client.hud.RpgTooltipRenderer());
 
         // 3. Networking Receiver
@@ -50,7 +51,7 @@ public class ReflactClient implements ClientModInitializer {
         // 5. Input Handling
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (castFireballKey.wasPressed()) {
-                net.reflact.client.network.ClientNetworkManager.sendPacket(new net.reflact.client.network.packet.CastSpellPacket("fireball"));
+                net.reflact.client.network.ClientNetworkManager.sendPacket(new CastSpellPacket("fireball"));
             }
         });
     }
