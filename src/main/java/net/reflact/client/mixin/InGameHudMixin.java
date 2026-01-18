@@ -24,4 +24,20 @@ public class InGameHudMixin {
     private void onRenderFood(DrawContext context, PlayerEntity player, int top, int right, CallbackInfo ci) {
         ci.cancel();
     }
+
+    // Cancelling Vanilla Status Effects
+    @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
+    private void onRenderStatusEffectOverlay(net.minecraft.client.gui.DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (net.reflact.client.ReflactClient.CONFIG.showStatusEffectHud()) {
+            ci.cancel();
+        }
+    }
+
+    // Cancelling Vanilla Experience Bar
+    @Inject(method = "renderExperienceBar", at = @At("HEAD"), cancellable = true)
+    private void onRenderExperienceBar(net.minecraft.client.gui.DrawContext context, int x, CallbackInfo ci) {
+        if (net.reflact.client.ReflactClient.CONFIG.showHud()) {
+            ci.cancel();
+        }
+    }
 }

@@ -8,10 +8,12 @@ version = "1.0.0"
 group = "net.reflact"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://maven.fabricmc.net/")
     maven("https://maven.wispforest.io")
     maven("https://jitpack.io")
+    maven("https://maven.wispforest.io/")
 }
 
 dependencies {
@@ -28,6 +30,10 @@ dependencies {
 
     // Fabric API
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
+
+    // owo-lib
+    modImplementation("io.wispforest:owo-lib:0.12.24+1.21.9")
+    annotationProcessor("io.wispforest:owo-lib:0.12.24+1.21.9")
 }
 
 java {
@@ -47,13 +53,3 @@ tasks.processResources {
         expand("version" to project.version)
     }
 }
-
-tasks.register<Copy>("copyToInstance") {
-    dependsOn(tasks.remapJar)
-    from(tasks.remapJar.get().archiveFile)
-    into("/home/remgr/.local/share/PrismLauncher/instances/1.21.11/minecraft/mods")
-    doLast {
-        println("Copied mod to PrismLauncher instance.")
-    }
-}
-

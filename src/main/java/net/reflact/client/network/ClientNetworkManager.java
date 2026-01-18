@@ -46,6 +46,7 @@ public class ClientNetworkManager {
     private static void processPacket(ReflactPacket packet) {
         if (packet instanceof ManaUpdatePacket manaPacket) {
             ClientData.currentMana = manaPacket.currentMana();
+            ClientData.maxMana = manaPacket.maxMana();
         } else if (packet instanceof S2CSyncItemPacket syncPacket) {
             net.reflact.client.managers.ClientItemManager.cacheItem(syncPacket.item());
         }

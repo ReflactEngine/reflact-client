@@ -21,10 +21,8 @@ import org.slf4j.LoggerFactory;
 
 public class ReflactClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("reflact-client");
+    public static final net.reflact.client.config.ReflactConfig CONFIG = net.reflact.client.config.ReflactConfig.createAndLoad();
     
-    // Keybindings
-    private static KeyBinding castFireballKey;
-
     @Override
     public void onInitializeClient() {
         LOGGER.info("Reflact Client initialized!");
@@ -40,19 +38,7 @@ public class ReflactClient implements ClientModInitializer {
         // 3. Networking Receiver
         net.reflact.client.network.ClientNetworkManager.init();
 
-        // 4. Keybinds (FIXED for 1.21.11)
-        castFireballKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.reflact.cast_fireball",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_R,
-                new KeyBinding.Category(Identifier.of("reflact", "general"))
-        ));
-
-        // 5. Input Handling
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (castFireballKey.wasPressed()) {
-                net.reflact.client.network.ClientNetworkManager.sendPacket(new CastSpellPacket("fireball"));
-            }
-        });
+        // 4. Input Handling
+        net.reflact.client.input.KeyInputHandler.register();
     }
 }
