@@ -5,7 +5,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.reflact.client.ClientData;
 import net.reflact.client.ReflactClient;
 
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Identifier;
+
 public class ManaBarOverlay implements ReflactOverlay {
+    private static final Identifier BG_TEXTURE = Identifier.of("reflact", "textures/gui/sprites/hud/mana_bg.png");
+    private static final Identifier PROGRESS_TEXTURE = Identifier.of("reflact", "textures/gui/sprites/hud/mana.png");
+
     @Override
     public void render(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -15,13 +21,18 @@ public class ManaBarOverlay implements ReflactOverlay {
         int height = getHeight();
 
         float manaPercent = (float) (ClientData.currentMana / ClientData.maxMana);
-        int manaColor = ReflactClient.CONFIG.manaColor().rgb();
-
-        context.fill(x - 1, y - 1, x + width + 1, y + height + 1, 0xFFFFFFFF);
-        context.fill(x, y, x + width, y + height, 0xFF000000);
-        int manaFill = (int) (width * manaPercent);
-        if (manaFill > 0) context.fill(x, y, x + manaFill, y + height, manaColor);
-        context.drawText(client.textRenderer, "MP " + (int)ClientData.currentMana + "/" + (int)ClientData.maxMana, x + 5, y + 1, 0xFFFFFF, true);
+        
+        // Draw Background
+        context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
+        
+        // Draw Progress
+        int progressWidth = (int) (width * manaPercent);
+        if (progressWidth > 0) {
+            float u2 = (float) progressWidth / width;
+            context.drawTexturedQuad(PROGRESS_TEXTURE, x, x + progressWidth, y, y + height, 0f, u2, 0f, 1f);
+        }
+        
+        context.drawText(client.textRenderer, "MP " + (int)ClientData.currentMana + "/" + (int)ClientData.maxMana, x + 5, y + (height - 8) / 2, 0xFFFFFF, true);
     }
     @Override public int getX() { return ReflactClient.CONFIG.manaBarX(); }
     @Override public int getY() { return ReflactClient.CONFIG.manaBarY(); }

@@ -5,7 +5,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.reflact.client.ClientData;
 import net.reflact.client.ReflactClient;
 
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Identifier;
+
 public class HealthBarOverlay implements ReflactOverlay {
+    private static final Identifier BG_TEXTURE = Identifier.of("reflact", "textures/gui/sprites/hud/health_bg.png");
+    private static final Identifier PROGRESS_TEXTURE = Identifier.of("reflact", "textures/gui/sprites/hud/health.png");
+
     @Override
     public void render(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -15,20 +21,26 @@ public class HealthBarOverlay implements ReflactOverlay {
 
         int x = getX();
         int y = getY();
+        // Use texture dimensions or keep configurable width?
+        // Textures are likely designed for a specific aspect ratio.
+        // Let's stick to configurable width/height but user might need to adjust config.
         int width = getWidth();
         int height = getHeight();
 
         float hpPercent = (float) (ClientData.currentHealth / ClientData.maxHealth);
-        int hpColor = ReflactClient.CONFIG.healthColor().rgb();
-        if (hpPercent < 0.25f && System.currentTimeMillis() % 1000 < 500) {
-            hpColor = 0xFFFFFFFF;
+        
+        // Draw Background
+        // context.drawTexture(RenderLayer::getGuiTextured, BG_TEXTURE, x, y, 0f, 0f, width, height, width, height);
+        context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
+        
+        // Draw Progress
+        int progressWidth = (int) (width * hpPercent);
+        if (progressWidth > 0) {
+            float u2 = (float) progressWidth / width;
+            context.drawTexturedQuad(PROGRESS_TEXTURE, x, x + progressWidth, y, y + height, 0f, u2, 0f, 1f);
         }
-
-        context.fill(x - 1, y - 1, x + width + 1, y + height + 1, 0xFFFFFFFF);
-        context.fill(x, y, x + width, y + height, 0xFF000000);
-        int hpFill = (int) (width * hpPercent);
-        if (hpFill > 0) context.fill(x, y, x + hpFill, y + height, hpColor);
-        context.drawText(client.textRenderer, "HP " + (int)ClientData.currentHealth + "/" + (int)ClientData.maxHealth, x + 5, y + 1, 0xFFFFFF, true);
+        
+        context.drawText(client.textRenderer, "HP " + (int)ClientData.currentHealth + "/" + (int)ClientData.maxHealth, x + 5, y + (height - 8) / 2, 0xFFFFFF, true);
     }
     @Override public int getX() { return ReflactClient.CONFIG.healthBarX(); }
     @Override public int getY() { return ReflactClient.CONFIG.healthBarY(); }

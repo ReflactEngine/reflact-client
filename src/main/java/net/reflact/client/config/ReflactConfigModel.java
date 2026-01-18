@@ -83,4 +83,11 @@ public class ReflactConfigModel {
 
     @RangeConstraint(min = 50, max = 200)
     public int radarSize = 80;
+
+    @SectionHeader("hotbar")
+    public boolean showHotbar = true;
+    @RangeConstraint(min = 0, max = 5000)
+    public int hotbarX = 0; // Default 0 means auto-center if handled by overlay
+    @RangeConstraint(min = 0, max = 5000)
+    public int hotbarY = 0; // Default 0 means auto-bottom
 }

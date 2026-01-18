@@ -18,27 +18,32 @@ import net.reflact.common.network.packet.CastSpellPacket;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.minecraft.client.render.RenderLayer; // Note: Check imports for RenderLayers vs RenderLayer depending on version
+import net.minecraft.util.Identifier;
+import net.reflact.client.hud.overlay.OverlayManager;
 
 public class ReflactClient implements ClientModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("reflact-client");
-    public static final net.reflact.client.config.ReflactConfig CONFIG = net.reflact.client.config.ReflactConfig.createAndLoad();
-    
-    @Override
-    public void onInitializeClient() {
-        LOGGER.info("Reflact Client initialized!");
+  public static final Logger LOGGER = LoggerFactory.getLogger("reflact-client");
+  public static final net.reflact.client.config.ReflactConfig CONFIG = net.reflact.client.config.ReflactConfig
+      .createAndLoad();
 
-        // 1. Register Payload Types
-        PayloadTypeRegistry.playS2C().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(net.reflact.client.network.ReflactJsonPayload.ID, net.reflact.client.network.ReflactJsonPayload.CODEC);
+  @Override
+  public void onInitializeClient() {
+    LOGGER.info("Reflact Client initialized!");
 
-        // 2. HUD
-        net.reflact.client.hud.ReflactHud.initialize();
-        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register(new net.reflact.client.hud.RpgTooltipRenderer());
+    // 1. Register Payload Types
+    PayloadTypeRegistry.playS2C().register(net.reflact.client.network.ReflactJsonPayload.ID,
+        net.reflact.client.network.ReflactJsonPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(net.reflact.client.network.ReflactJsonPayload.ID,
+        net.reflact.client.network.ReflactJsonPayload.CODEC);
 
-        // 3. Networking Receiver
-        net.reflact.client.network.ClientNetworkManager.init();
+    // 2. HUD
+    ReflactHud.initialize();
 
-        // 4. Input Handling
-        net.reflact.client.input.KeyInputHandler.register();
-    }
+    // 3. Networking Receiver
+    net.reflact.client.network.ClientNetworkManager.init();
+
+    // 4. Input Handling
+    net.reflact.client.input.KeyInputHandler.register();
+  }
 }

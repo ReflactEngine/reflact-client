@@ -8,6 +8,7 @@ public class ReflactHud {
     public static void initialize() {
         OverlayManager.INSTANCE.register(new HealthBarOverlay());
         OverlayManager.INSTANCE.register(new ManaBarOverlay());
+        OverlayManager.INSTANCE.register(new HotbarOverlay());
         OverlayManager.INSTANCE.register(new InfoHudOverlay());
         OverlayManager.INSTANCE.register(new ArmorHudOverlay());
         OverlayManager.INSTANCE.register(new StatusEffectOverlay());
@@ -32,6 +33,6 @@ public class ReflactHud {
             @Override public String getName() { return "Notifications"; }
         });
 
-        HudRenderCallback.EVENT.register(OverlayManager.INSTANCE);
+        HudRenderCallback.EVENT.register(OverlayManager.INSTANCE::onHudRender);
     }
 }
