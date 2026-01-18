@@ -30,15 +30,28 @@ public class HealthBarOverlay implements ReflactOverlay {
         float hpPercent = (float) (ClientData.currentHealth / ClientData.maxHealth);
         
         // Draw Background
-        // context.drawTexture(RenderLayer::getGuiTextured, BG_TEXTURE, x, y, 0f, 0f, width, height, width, height);
-        context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
+        // Use simple color fill if texture is problematic
+        context.fill(x, y, x + width, y + height, 0x80000000); // Semi-transparent black bg
         
         // Draw Progress
+        int progressWidth = (int) (width * hpPercent);
+        if (progressWidth > 0) {
+            // ReflactClient.CONFIG.healthColor() returns io.wispforest.owo.ui.core.Color
+            // We need ARGB int. .rgb() usually returns RGB, check alpha.
+            int color = ReflactClient.CONFIG.healthColor().rgb();
+            // Ensure full opacity if owo color doesn't provide it, or use standard red
+            color = color | 0xFF000000; 
+            context.fill(x, y, x + progressWidth, y + height, color);
+        }
+        
+        // context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
+        /*
         int progressWidth = (int) (width * hpPercent);
         if (progressWidth > 0) {
             float u2 = (float) progressWidth / width;
             context.drawTexturedQuad(PROGRESS_TEXTURE, x, x + progressWidth, y, y + height, 0f, u2, 0f, 1f);
         }
+        */
         
         context.drawText(client.textRenderer, "HP " + (int)ClientData.currentHealth + "/" + (int)ClientData.maxHealth, x + 5, y + (height - 8) / 2, 0xFFFFFF, true);
     }

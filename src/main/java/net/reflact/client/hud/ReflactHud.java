@@ -14,6 +14,7 @@ public class ReflactHud {
         OverlayManager.INSTANCE.register(new StatusEffectOverlay());
         OverlayManager.INSTANCE.register(new TargetHudOverlay());
         OverlayManager.INSTANCE.register(new SpellHudOverlay());
+        OverlayManager.INSTANCE.register(new MinimapOverlay());
         
         // Notifications
         OverlayManager.INSTANCE.register(new net.reflact.client.hud.overlay.ReflactOverlay() {

@@ -58,6 +58,7 @@ public class ClientNetworkManager {
             LOGGER.warn("Tried to send unregistered packet: {}", packet.getClass().getName());
             return;
         }
+        LOGGER.info("Sending packet: {} -> {}", id, gson.toJson(packet));
         String data = id + ":" + gson.toJson(packet);
         if (ClientPlayNetworking.canSend(ReflactJsonPayload.ID)) {
             ClientPlayNetworking.send(new ReflactJsonPayload(data));

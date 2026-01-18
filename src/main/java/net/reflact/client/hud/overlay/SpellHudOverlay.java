@@ -1,8 +1,11 @@
 package net.reflact.client.hud.overlay;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.option.KeyBinding;
 import net.reflact.client.ClientData;
 import net.reflact.client.ReflactClient;
+import net.reflact.client.input.KeyInputHandler;
 
 public class SpellHudOverlay implements ReflactOverlay {
     @Override
@@ -12,9 +15,43 @@ public class SpellHudOverlay implements ReflactOverlay {
         int y = getY();
         int spellSize = 20;
         int spellGap = 5;
-        renderSpellIcon(context, client.textRenderer, "fireball", "R", x, y, spellSize);
-        renderSpellIcon(context, client.textRenderer, "heal", "G", x + spellSize + spellGap, y, spellSize);
+        
+        int renderedCount = 0;
+        for (int i = 0; i < 10; i++) {
+             String spell = getSpell(i + 1);
+             if (spell == null || spell.isEmpty()) continue;
+             
+             KeyBinding key = KeyInputHandler.getSpellKey(i);
+             String keyText = "?";
+             if (key != null) {
+                 keyText = key.getBoundKeyLocalizedText().getString().toUpperCase();
+                 // Simplistic cleanup for display
+                 if (keyText.startsWith("KEY.KEYBOARD.")) keyText = keyText.replace("KEY.KEYBOARD.", "");
+                 if (keyText.length() > 2) keyText = keyText.substring(0, 1); 
+             }
+
+             int renderX = x + (renderedCount * (spellSize + spellGap));
+             renderSpellIcon(context, client.textRenderer, spell, keyText, renderX, y, spellSize);
+             renderedCount++;
+        }
     }
+    
+    private String getSpell(int slot) {
+        return switch (slot) {
+            case 1 -> ReflactClient.CONFIG.spellSlot1();
+            case 2 -> ReflactClient.CONFIG.spellSlot2();
+            case 3 -> ReflactClient.CONFIG.spellSlot3();
+            case 4 -> ReflactClient.CONFIG.spellSlot4();
+            case 5 -> ReflactClient.CONFIG.spellSlot5();
+            case 6 -> ReflactClient.CONFIG.spellSlot6();
+            case 7 -> ReflactClient.CONFIG.spellSlot7();
+            case 8 -> ReflactClient.CONFIG.spellSlot8();
+            case 9 -> ReflactClient.CONFIG.spellSlot9();
+            case 10 -> ReflactClient.CONFIG.spellSlot10();
+            default -> "";
+        };
+    }
+
     private void renderSpellIcon(DrawContext context, net.minecraft.client.font.TextRenderer textRenderer, String spellName, String keyText, int x, int y, int size) {
         long lastCast = ClientData.spellLastCast.getOrDefault(spellName, 0L);
         long cooldown = ClientData.spellCooldowns.getOrDefault(spellName, 0L);

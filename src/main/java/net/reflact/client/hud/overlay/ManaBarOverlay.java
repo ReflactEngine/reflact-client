@@ -23,6 +23,18 @@ public class ManaBarOverlay implements ReflactOverlay {
         float manaPercent = (float) (ClientData.currentMana / ClientData.maxMana);
         
         // Draw Background
+        context.fill(x, y, x + width, y + height, 0x80000000);
+        
+        // Draw Progress
+        int progressWidth = (int) (width * manaPercent);
+        if (progressWidth > 0) {
+             int color = ReflactClient.CONFIG.manaColor().rgb();
+             color = color | 0xFF000000;
+             context.fill(x, y, x + progressWidth, y + height, color);
+        }
+        
+        /*
+        // Draw Background
         context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
         
         // Draw Progress
@@ -31,6 +43,7 @@ public class ManaBarOverlay implements ReflactOverlay {
             float u2 = (float) progressWidth / width;
             context.drawTexturedQuad(PROGRESS_TEXTURE, x, x + progressWidth, y, y + height, 0f, u2, 0f, 1f);
         }
+        */
         
         context.drawText(client.textRenderer, "MP " + (int)ClientData.currentMana + "/" + (int)ClientData.maxMana, x + 5, y + (height - 8) / 2, 0xFFFFFF, true);
     }

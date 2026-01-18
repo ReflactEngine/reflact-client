@@ -90,4 +90,16 @@ public class ReflactConfigModel {
     public int hotbarX = 0; // Default 0 means auto-center if handled by overlay
     @RangeConstraint(min = 0, max = 5000)
     public int hotbarY = 0; // Default 0 means auto-bottom
+
+    @SectionHeader("spells")
+    public String spellSlot1 = "fireball";
+    public String spellSlot2 = "heal";
+    public String spellSlot3 = "";
+    public String spellSlot4 = "";
+    public String spellSlot5 = "";
+    public String spellSlot6 = "";
+    public String spellSlot7 = "";
+    public String spellSlot8 = "";
+    public String spellSlot9 = "";
+    public String spellSlot10 = "";
 }

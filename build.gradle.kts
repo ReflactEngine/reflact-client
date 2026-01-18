@@ -32,8 +32,9 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
 
     // owo-lib
-    modImplementation("io.wispforest:owo-lib:0.12.24+1.21.9")
-    annotationProcessor("io.wispforest:owo-lib:0.12.24+1.21.9")
+    modImplementation("io.wispforest:owo-lib:0.13.0-alpha.16+1.21.11")
+    include("io.wispforest:owo-lib:0.13.0-alpha.16+1.21.11")
+    annotationProcessor("io.wispforest:owo-lib:0.13.0-alpha.16+1.21.11")
 }
 
 java {
