@@ -147,16 +147,13 @@ public class WorldMapScreen extends Screen {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(x, y);
         context.getMatrices().rotate((float) Math.toRadians(yaw + 180));
-        context.getMatrices().translate(-x, -y);
         
-        // Texture: map_pointers.png. Assuming 16x16, drawing top-left 8x8.
-        float u1 = 0f;
-        float u2 = 0.5f;
-        float v1 = 0f;
-        float v2 = 0.5f;
-        float size = 8 * 1.5f; // Scale up a bit
-        
-        context.drawTexturedQuad(POINTER_TEXTURE, (int)(x - size/2), (int)(x + size/2), (int)(y - size/2), (int)(y + size/2), u1, u2, v1, v2);
+        int arrowColor = 0xFFAAAAAA;
+        // Simple pixel arrow centered at 0,0
+        context.fill(-1, -4, 1, -2, arrowColor);
+        context.fill(-2, -2, 2, 0, arrowColor);
+        context.fill(-3, 0, 3, 2, arrowColor);
+        context.fill(-4, 2, 4, 4, arrowColor);
         
         context.getMatrices().popMatrix();
     }
@@ -171,6 +168,9 @@ public class WorldMapScreen extends Screen {
         }
         return super.mouseDragged(click, deltaX, deltaY);
     }
+    
+    // Removed old signature method if it exists to avoid confusion, using correct fabric/yarn mapping
+    // mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) is the standard
     
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {

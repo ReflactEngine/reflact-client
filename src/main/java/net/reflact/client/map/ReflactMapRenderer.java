@@ -48,6 +48,8 @@ public class ReflactMapRenderer {
         // But MapTextureManager updates the texture to be CENTERED on the player.
         // So we can just draw the whole texture.
         
+        // Draw the full texture stretched to the box
+        // Using drawTexturedQuad as it is supported in this environment
         context.drawTexturedQuad(
             texture,
             x, x + w, 

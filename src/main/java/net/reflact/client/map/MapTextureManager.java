@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 
 public class MapTextureManager {
 
-    private static final int MAP_SIZE = 128; // Standard map size
+    public static final int MAP_SIZE = 128; // Standard map size
     private final NativeImage nativeImage;
     private NativeImageBackedTexture dynamicTexture; // Remove final
     private final Identifier textureId;
@@ -42,8 +42,16 @@ public class MapTextureManager {
         initialized = true;
     }
 
+    private long lastServerUpdate = 0;
+
     public void update(MinecraftClient client) {
         if (!initialized) init();
+
+        // If we received server map data recently (within 6 seconds), don't overwrite with client scan
+        if (System.currentTimeMillis() - lastServerUpdate < 6000) {
+            this.dynamicTexture.upload();
+            return;
+        }
 
         if (client.player == null || client.world == null) return;
         
@@ -64,17 +72,22 @@ public class MapTextureManager {
                 int color = state.getMapColor(client.world, pos).color;
                 
                 if (color == 0) {
-                    color = 0xFF000000;
+                    // Void / Black - Use transparent or dark gray
+                    nativeImage.setColor(x, z, 0xFF000000);
                 } else {
-                    // Convert MapColor (ARGB) to ABGR for NativeImage
-                    int r = (color >> 16) & 0xFF;
-                    int g = (color >> 8) & 0xFF;
-                    int b = color & 0xFF;
-                    int a = 0xFF;
-                    color = (a << 24) | (b << 16) | (g << 8) | r;
+                    // MapColor.color is usually integer ARGB.
+                    // NativeImage expects ABGR (Little Endian).
+                    // We need to swap Red and Blue.
+                    
+                    int alpha = 255; // Force opaque
+                    int red = (color >> 16) & 0xFF;
+                    int green = (color >> 8) & 0xFF;
+                    int blue = color & 0xFF;
+                    
+                    // ABGR
+                    int abgr = (alpha << 24) | (blue << 16) | (green << 8) | red;
+                    nativeImage.setColor(x, z, abgr);
                 }
-                
-                nativeImage.setColor(x, z, color);
             }
         }
 
@@ -83,6 +96,7 @@ public class MapTextureManager {
     
     public void setMapData(byte[] colors, int width, int height) {
         if (!initialized) init();
+        this.lastServerUpdate = System.currentTimeMillis();
         // Assuming colors is RGBA
         // NativeImage expects RGBA? Or ABGR?
         // NativeImage methods usually take int color.

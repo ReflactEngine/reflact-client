@@ -126,9 +126,9 @@ public class KeyInputHandler {
         boolean hasWand = mainHand.isOf(net.minecraft.item.Items.STICK) || mainHand.isOf(net.minecraft.item.Items.BLAZE_ROD);
         
         if (!hasWand) {
-             // Optional: Uncomment to warn user
-             // client.player.sendMessage(net.minecraft.text.Text.of("§c[Reflact] You need a Stick or Blaze Rod to cast spells!"), true);
+             client.player.sendMessage(net.minecraft.text.Text.of("§c[Reflact] You need a Stick or Blaze Rod to cast spells!"), true);
              // For now we proceed so server can decide, but user asked about sticks.
+             return; 
         }
 
         String spell = switch (slot) {

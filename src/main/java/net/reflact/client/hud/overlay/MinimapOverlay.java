@@ -48,7 +48,10 @@ public class MinimapOverlay implements ReflactOverlay {
         );
         
         // Entities (Radar)
-        float rangeEntities = 32.0f; 
+        // Range should match the Map Texture Radius
+        // Map covers MAP_SIZE blocks. Radius = MAP_SIZE / 2.
+        float rangeEntities = MapTextureManager.MAP_SIZE / 2.0f; 
+        
         for (Entity entity : client.world.getEntities()) {
             if (entity == client.player) continue;
             if (!(entity instanceof LivingEntity)) continue;
@@ -88,21 +91,25 @@ public class MinimapOverlay implements ReflactOverlay {
         context.fill(x - 1, y, x, y + size, borderColor); // Left
         context.fill(x + size, y, x + size + 1, y + size, borderColor); // Right
 
-        // 3. Render Player Pointer
-        // Center of map
-        // Rotate based on player yaw
+        // 3. Render Player Pointer (Manual Shape to avoid texture issues)
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(centerX, centerY);
         context.getMatrices().rotate((float) Math.toRadians(client.player.getYaw() + 180));
-        context.getMatrices().translate(-centerX, -centerY);
         
-        // Texture: map_pointers.png. Assuming 16x16, drawing top-left 8x8.
-        float u1 = 0f;
-        float u2 = 0.5f;
-        float v1 = 0f;
-        float v2 = 0.5f;
-        // Draw centered at rotation point
-        context.drawTexturedQuad(POINTER_TEXTURE, (int)(centerX - 4), (int)(centerX + 4), (int)(centerY - 4), (int)(centerY + 4), u1, u2, v1, v2);
+        // Draw a simple arrow using fills
+        // Center is 0,0
+        // Tip at (0, -4), Left at (-3, 3), Right at (3, 3), Indent at (0, 1)
+        
+        // We can't use fill for triangles easily without BufferBuilder.
+        // Let's draw a rotated square or simple rectangle for now, or attempt a small pixel art arrow.
+        // 0xFFRed
+        int arrowColor = 0xFFAAAAAA; 
+        
+        // Tip
+        context.fill(-1, -4, 1, -2, arrowColor);
+        context.fill(-2, -2, 2, 0, arrowColor);
+        context.fill(-3, 0, 3, 2, arrowColor);
+        context.fill(-4, 2, 4, 4, arrowColor);
         
         context.getMatrices().popMatrix();
     }

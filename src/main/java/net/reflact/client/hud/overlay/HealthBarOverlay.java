@@ -29,31 +29,42 @@ public class HealthBarOverlay implements ReflactOverlay {
 
         float hpPercent = (float) (ClientData.currentHealth / ClientData.maxHealth);
         
-        // Draw Background
-        // Use simple color fill if texture is problematic
-        context.fill(x, y, x + width, y + height, 0x80000000); // Semi-transparent black bg
+        // Draw Polished Bar
+        // 1. Background (Dark Gray)
+        context.fill(x, y, x + width, y + height, 0xFF333333);
         
-        // Draw Progress
+        // 2. Background Border (Black)
+        int border = 1;
+        context.fill(x - border, y - border, x + width + border, y, 0xFF000000); // Top
+        context.fill(x - border, y + height, x + width + border, y + height + border, 0xFF000000); // Bottom
+        context.fill(x - border, y, x, y + height, 0xFF000000); // Left
+        context.fill(x + width, y, x + width + border, y + height, 0xFF000000); // Right
+        
+        // 3. Progress
         int progressWidth = (int) (width * hpPercent);
         if (progressWidth > 0) {
-            // ReflactClient.CONFIG.healthColor() returns io.wispforest.owo.ui.core.Color
-            // We need ARGB int. .rgb() usually returns RGB, check alpha.
             int color = ReflactClient.CONFIG.healthColor().rgb();
-            // Ensure full opacity if owo color doesn't provide it, or use standard red
-            color = color | 0xFF000000; 
+            color = color | 0xFF000000; // Full alpha
+            
+            // Main fill
             context.fill(x, y, x + progressWidth, y + height, color);
+            
+            // Highlight (Top half lighter)
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = color & 0xFF;
+            int lighter = 0xFF000000 | 
+                          (Math.min(255, r + 40) << 16) | 
+                          (Math.min(255, g + 40) << 8) | 
+                          Math.min(255, b + 40);
+                          
+            context.fill(x, y, x + progressWidth, y + height / 2, lighter);
         }
         
-        // context.drawTexturedQuad(BG_TEXTURE, x, x + width, y, y + height, 0f, 1f, 0f, 1f);
-        /*
-        int progressWidth = (int) (width * hpPercent);
-        if (progressWidth > 0) {
-            float u2 = (float) progressWidth / width;
-            context.drawTexturedQuad(PROGRESS_TEXTURE, x, x + progressWidth, y, y + height, 0f, u2, 0f, 1f);
-        }
-        */
-        
-        context.drawText(client.textRenderer, "HP " + (int)ClientData.currentHealth + "/" + (int)ClientData.maxHealth, x + 5, y + (height - 8) / 2, 0xFFFFFF, true);
+        // 4. Text (Shadowed, Centered)
+        String text = "HP " + (int)ClientData.currentHealth + "/" + (int)ClientData.maxHealth;
+        int textWidth = client.textRenderer.getWidth(text);
+        context.drawText(client.textRenderer, text, x + (width - textWidth) / 2, y + (height - 8) / 2, 0xFFFFFF, true);
     }
     @Override public int getX() { return ReflactClient.CONFIG.healthBarX(); }
     @Override public int getY() { return ReflactClient.CONFIG.healthBarY(); }
