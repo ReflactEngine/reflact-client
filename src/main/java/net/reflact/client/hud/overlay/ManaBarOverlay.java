@@ -51,8 +51,16 @@ public class ManaBarOverlay implements ReflactOverlay {
     @Override public int getY() { return ReflactClient.CONFIG.manaBarY(); }
     @Override public void setX(int x) { ReflactClient.CONFIG.manaBarX(x); }
     @Override public void setY(int y) { ReflactClient.CONFIG.manaBarY(y); }
-    @Override public int getWidth() { return 100; }
-    @Override public int getHeight() { return 10; }
+    // Resizable state
+    private int width = 100;
+    private int height = 10;
+
+    @Override public int getWidth() { return width; }
+    @Override public int getHeight() { return height; }
+    
+    @Override public void setWidth(int w) { this.width = w; }
+    @Override public void setHeight(int h) { this.height = h; }
+
     @Override public boolean isEnabled() { return true; }
     @Override public String getName() { return "Mana Bar"; }
 }

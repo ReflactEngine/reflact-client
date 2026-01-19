@@ -22,6 +22,7 @@ public class KeyInputHandler {
     private static KeyBinding menuKey;
     private static KeyBinding toggleInfoKey;
     private static KeyBinding hudEditorKey;
+    private static KeyBinding questLogKey;
 
     public static void register() {
         // Register 10 spell keys
@@ -66,6 +67,13 @@ public class KeyInputHandler {
                 GLFW.GLFW_KEY_H,
                 new KeyBinding.Category(Identifier.of("reflact", "general"))
         ));
+        
+        questLogKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.reflact.quest_log",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_L,
+                new KeyBinding.Category(Identifier.of("reflact", "general"))
+        ));
 
         registerEvents();
     }
@@ -83,6 +91,10 @@ public class KeyInputHandler {
 
             while (hudEditorKey.wasPressed()) {
                 client.setScreen(new net.reflact.client.gui.HudEditorScreen());
+            }
+            
+            while (questLogKey.wasPressed()) {
+                client.setScreen(new net.reflact.client.gui.QuestScreen());
             }
             
             while (mapKey.wasPressed()) {

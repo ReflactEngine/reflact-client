@@ -7,11 +7,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.reflact.client.ReflactClient;
+import net.reflact.client.map.MapTextureManager;
+import net.reflact.client.map.ReflactMapRenderer;
 
 public class MinimapOverlay implements ReflactOverlay {
     
     private static final Identifier BORDER_TEXTURE = Identifier.of("reflact", "textures/map/wynn_map_textures.png");
     private static final Identifier POINTER_TEXTURE = Identifier.of("reflact", "textures/map/map_pointers.png");
+
+    private final MapTextureManager mapManager = MapTextureManager.INSTANCE;
 
     @Override
     public void render(DrawContext context, float tickDelta) {
@@ -25,48 +29,23 @@ public class MinimapOverlay implements ReflactOverlay {
         int centerY = y + size / 2;
         
         // 1. Render Map Background (The World)
-        // We use a stencil or scissor to clip content to the circle/square.
-        // For simplicity, we just render the square content first.
-        
         context.enableScissor(x, y, x + size, y + size);
         
         // Background color
         context.fill(x, y, x + size, y + size, 0xFF000000); 
 
-        // Optimised Block Renderer
-        // Only render every 2nd or 4th pixel to reduce lag ("jank")
-        int range = 24; 
-        int steps = 2; // pixel step
-        int blockSize = size / (range * 2);
-        if (blockSize < 1) blockSize = 1;
-
-        int pX = client.player.getBlockX();
-        int pZ = client.player.getBlockZ();
+        // Update and Render Map Texture
+        mapManager.update(client);
         
-        // Render blocks
-        for (int dx = -range; dx <= range; dx++) {
-            for (int dz = -range; dz <= range; dz++) {
-                int worldX = pX + dx;
-                int worldZ = pZ + dz;
-                
-                // Get highest block - use HEIGHTMAP for speed
-                int worldY = client.world.getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING, worldX, worldZ);
-                net.minecraft.util.math.BlockPos pos = new net.minecraft.util.math.BlockPos(worldX, worldY - 1, worldZ);
-                net.minecraft.block.BlockState state = client.world.getBlockState(pos);
-                
-                int color = state.getMapColor(client.world, pos).color;
-                if (color == 0) continue; 
-                
-                int mapPixelX = centerX + (dx * blockSize);
-                int mapPixelY = centerY + (dz * blockSize);
-                
-                // Only draw if within bounds
-                if (mapPixelX >= x && mapPixelX < x + size && mapPixelY >= y && mapPixelY < y + size) {
-                     color = color | 0xFF000000;
-                     context.fill(mapPixelX, mapPixelY, mapPixelX + blockSize, mapPixelY + blockSize, color);
-                }
-            }
-        }
+        ReflactMapRenderer.renderMapTexture(
+            context,
+            mapManager.getTextureId(),
+            centerX, centerY,
+            0, 0, // Texture offsets not fully used yet
+            size, size,
+            1.0f,
+            128, 128 // Texture size from Manager
+        );
         
         // Entities (Radar)
         float rangeEntities = 32.0f; 
@@ -111,12 +90,21 @@ public class MinimapOverlay implements ReflactOverlay {
 
         // 3. Render Player Pointer
         // Center of map
+        // Rotate based on player yaw
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(centerX, centerY);
+        context.getMatrices().rotate((float) Math.toRadians(client.player.getYaw() + 180));
+        context.getMatrices().translate(-centerX, -centerY);
+        
         // Texture: map_pointers.png. Assuming 16x16, drawing top-left 8x8.
         float u1 = 0f;
         float u2 = 0.5f;
         float v1 = 0f;
         float v2 = 0.5f;
-        context.drawTexturedQuad(POINTER_TEXTURE, centerX - 4, centerX + 4, centerY - 4, centerY + 4, u1, u2, v1, v2); 
+        // Draw centered at rotation point
+        context.drawTexturedQuad(POINTER_TEXTURE, (int)(centerX - 4), (int)(centerX + 4), (int)(centerY - 4), (int)(centerY + 4), u1, u2, v1, v2);
+        
+        context.getMatrices().popMatrix();
     }
     @Override public int getX() { return ReflactClient.CONFIG.radarX(); }
     @Override public int getY() { return ReflactClient.CONFIG.radarY(); }
@@ -126,4 +114,7 @@ public class MinimapOverlay implements ReflactOverlay {
     @Override public int getHeight() { return ReflactClient.CONFIG.radarSize(); }
     @Override public boolean isEnabled() { return ReflactClient.CONFIG.showEntityRadar(); }
     @Override public String getName() { return "Minimap"; }
+    
+    @Override public void setWidth(int width) { ReflactClient.CONFIG.radarSize(width); }
+    @Override public void setHeight(int height) { ReflactClient.CONFIG.radarSize(height); } // Keep square
 }

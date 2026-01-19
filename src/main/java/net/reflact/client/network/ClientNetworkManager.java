@@ -8,6 +8,7 @@ import net.reflact.common.network.packet.CastSpellPacket;
 import net.reflact.common.network.packet.ManaUpdatePacket;
 import net.reflact.common.network.packet.ReflactPacket;
 import net.reflact.common.network.packet.S2CSyncItemPacket;
+import net.reflact.common.network.packet.MapDataPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,8 @@ public class ClientNetworkManager {
             ClientData.maxMana = manaPacket.maxMana();
         } else if (packet instanceof S2CSyncItemPacket syncPacket) {
             net.reflact.client.managers.ClientItemManager.cacheItem(syncPacket.item());
+        } else if (packet instanceof MapDataPacket mapPacket) {
+            net.reflact.client.map.MapTextureManager.INSTANCE.setMapData(mapPacket.colors(), mapPacket.width(), mapPacket.height());
         }
     }
 

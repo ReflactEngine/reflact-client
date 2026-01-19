@@ -6,6 +6,8 @@ import net.minecraft.text.Text;
 import net.reflact.client.hud.overlay.OverlayManager;
 import net.reflact.client.hud.overlay.ReflactOverlay;
 import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.KeyInput;
 
 public class HudEditorScreen extends Screen {
 
@@ -48,14 +50,15 @@ public class HudEditorScreen extends Screen {
         }
 
         context.drawCenteredTextWithShadow(textRenderer, "HUD Editor - Drag or use Arrow Keys (Shift for faster) to move", width / 2, 10, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(textRenderer, "Press ENTER or ESC to Save & Exit", width / 2, 25, 0xAAAAAA);
+        context.drawCenteredTextWithShadow(textRenderer, "Scroll to Resize Selected Item", width / 2, 25, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, "Press ENTER or ESC to Save & Exit", width / 2, 40, 0xAAAAAA);
 
         super.render(context, mouseX, mouseY, delta);
     }
 
-    // @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) { // Left click
+    @Override
+    public boolean mouseClicked(Click click, boolean isRecursive) {
+        if (click.button() == 0) { // Left click
             // Check for overlay selection (Topmost first)
             for (int i = OverlayManager.INSTANCE.getOverlays().size() - 1; i >= 0; i--) {
                 ReflactOverlay overlay = OverlayManager.INSTANCE.getOverlays().get(i);
@@ -65,10 +68,10 @@ public class HudEditorScreen extends Screen {
                     int w = overlay.getWidth();
                     int h = overlay.getHeight();
 
-                    if (mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h) {
+                    if (click.x() >= x && click.x() <= x + w && click.y() >= y && click.y() <= y + h) {
                         selectedOverlay = overlay;
-                        dragOffsetX = (int) mouseX - x;
-                        dragOffsetY = (int) mouseY - y;
+                        dragOffsetX = (int) click.x() - x;
+                        dragOffsetY = (int) click.y() - y;
                         isDragging = true;
                         return true; // Consume event
                     }
@@ -78,65 +81,80 @@ public class HudEditorScreen extends Screen {
             selectedOverlay = null;
             isDragging = false;
         }
-        return false; // super.mouseClicked(mouseX, mouseY, button);
+        return false;
     }
 
-    // @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (isDragging && selectedOverlay != null && button == 0) {
+    @Override
+    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+        if (isDragging && selectedOverlay != null && click.button() == 0) {
             // Update position
-            int newX = (int) mouseX - dragOffsetX;
-            int newY = (int) mouseY - dragOffsetY;
-            
-            // Optional: Clamp to screen
-            // newX = Math.max(0, Math.min(newX, width - selectedOverlay.getWidth()));
-            // newY = Math.max(0, Math.min(newY, height - selectedOverlay.getHeight()));
+            int newX = (int) click.x() - dragOffsetX;
+            int newY = (int) click.y() - dragOffsetY;
             
             selectedOverlay.setX(newX);
             selectedOverlay.setY(newY);
             return true;
         }
-        return false; // super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return false;
     }
     
-    // @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            isDragging = false;
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (selectedOverlay != null) {
+            // Resize selected overlay
+            int scaleStep = 2;
+            int newW = selectedOverlay.getWidth() + (int)(verticalAmount * scaleStep);
+            int newH = selectedOverlay.getHeight() + (int)(verticalAmount * scaleStep);
+            
+            // Basic validation
+            if (newW < 10) newW = 10;
+            if (newH < 10) newH = 10;
+            
+            selectedOverlay.setWidth(newW);
+            selectedOverlay.setHeight(newH);
+            return true;
         }
-        return false; // super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
-    // @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    @Override
+    public boolean mouseReleased(Click click) {
+        if (click.button() == 0) {
+            isDragging = false;
+        }
+        return super.mouseReleased(click);
+    }
+
+    @Override
+    public boolean keyPressed(KeyInput input) {
         if (selectedOverlay != null) {
             int moveAmount = 1;
-            if ((modifiers & GLFW.GLFW_MOD_SHIFT) != 0) moveAmount = 10;
+            if ((input.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0) moveAmount = 10;
             
-            if (keyCode == GLFW.GLFW_KEY_UP) {
+            if (input.key() == GLFW.GLFW_KEY_UP) {
                 selectedOverlay.setY(selectedOverlay.getY() - moveAmount);
                 return true;
             }
-            if (keyCode == GLFW.GLFW_KEY_DOWN) {
+            if (input.key() == GLFW.GLFW_KEY_DOWN) {
                 selectedOverlay.setY(selectedOverlay.getY() + moveAmount);
                 return true;
             }
-            if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            if (input.key() == GLFW.GLFW_KEY_LEFT) {
                 selectedOverlay.setX(selectedOverlay.getX() - moveAmount);
                 return true;
             }
-            if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            if (input.key() == GLFW.GLFW_KEY_RIGHT) {
                 selectedOverlay.setX(selectedOverlay.getX() + moveAmount);
                 return true;
             }
         }
         
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_ESCAPE) {
             this.close();
             return true;
         }
         
-        return false; // super.keyPressed(keyCode, scanCode, modifiers);
+        return false;
     }
 
     @Override

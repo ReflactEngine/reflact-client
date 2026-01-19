@@ -29,27 +29,43 @@ public class ReflactMapRenderer {
             int textureWidth,
             int textureHeight) {
             
-        // Placeholder render to fix compilation issues with DrawContext/VertexFormat
-        // In a real implementation, we would use proper BufferBuilder logic here.
         float halfWidth = width / 2f;
         float halfHeight = height / 2f;
+
+        // Render the dynamic map texture
+        // We use drawTexture with custom UVs if needed, or just the whole texture if it matches the view
+        // For simplicity, we assume the texture covers the area we want to draw.
+        // In a real scrolling map, we'd adjust UVs based on player position relative to the texture center.
         
-        context.fill(
-            (int)(centerX - halfWidth), 
-            (int)(centerZ - halfHeight), 
-            (int)(centerX + halfWidth), 
-            (int)(centerZ + halfHeight), 
-            0xFF555555 // Grey placeholder
+        // renderX/Y is top-left
+        int x = (int)(centerX - halfWidth);
+        int y = (int)(centerZ - halfHeight);
+        int w = (int)width;
+        int h = (int)height;
+        
+        // Draw the full texture stretched to the box (placeholder logic)
+        // Ideally we want to draw a subsection if we are zooming.
+        // But MapTextureManager updates the texture to be CENTERED on the player.
+        // So we can just draw the whole texture.
+        
+        context.drawTexturedQuad(
+            texture,
+            x, x + w, 
+            y, y + h, 
+            0f, 1f, 
+            0f, 1f
         );
         
-        // Draw grid lines to show it's a map
+        // Draw grid lines to show it's a map (Optional, maybe remove later)
+        /*
         int gridStep = 50;
-        for (float x = centerX - halfWidth; x < centerX + halfWidth; x += gridStep) {
-             context.fill((int)x, (int)(centerZ - halfHeight), (int)x + 1, (int)(centerZ + halfHeight), 0xFF888888);
+        for (float gx = centerX - halfWidth; gx < centerX + halfWidth; gx += gridStep) {
+             context.fill((int)gx, (int)(centerZ - halfHeight), (int)gx + 1, (int)(centerZ + halfHeight), 0x44888888);
         }
-        for (float y = centerZ - halfHeight; y < centerZ + halfHeight; y += gridStep) {
-             context.fill((int)(centerX - halfWidth), (int)y, (int)(centerX + halfWidth), (int)y + 1, 0xFF888888);
+        for (float gy = centerZ - halfHeight; gy < centerZ + halfHeight; gy += gridStep) {
+             context.fill((int)(centerX - halfWidth), (int)gy, (int)(centerX + halfWidth), (int)gy + 1, 0x44888888);
         }
+        */
     }
     
     // Helper to get render position

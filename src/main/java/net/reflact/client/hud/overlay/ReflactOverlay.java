@@ -10,6 +10,11 @@ public interface ReflactOverlay {
     void setY(int y);
     int getWidth();
     int getHeight();
+    
+    // Resize support
+    default void setWidth(int width) {}
+    default void setHeight(int height) {}
+    
     boolean isEnabled();
     String getName();
 }
