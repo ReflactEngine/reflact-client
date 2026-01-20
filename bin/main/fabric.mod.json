@@ -20,6 +20,7 @@
   "depends": {
     "fabricloader": ">=0.16.9",
     "minecraft": "~1.21.11",
-    "java": ">=25"
+    "java": ">=25",
+    "owo-lib": ">=0.13.0-alpha.16"
   }
 }

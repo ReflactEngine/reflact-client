@@ -30,7 +30,7 @@ public class ClientNetworkManager {
     }
 
     private static void handlePacket(String id, String json) {
-        Class<? extends ReflactPacket> clazz = PacketRegistry.get(id);
+        Class<? extends ReflactPacket> clazz = PacketRegistry.INSTANCE.get(id);
         if (clazz == null) {
             LOGGER.warn("Unknown packet ID: {}", id);
             return;
@@ -46,17 +46,17 @@ public class ClientNetworkManager {
 
     private static void processPacket(ReflactPacket packet) {
         if (packet instanceof ManaUpdatePacket manaPacket) {
-            ClientData.currentMana = manaPacket.currentMana();
-            ClientData.maxMana = manaPacket.maxMana();
+            ClientData.currentMana = manaPacket.getCurrentMana();
+            ClientData.maxMana = manaPacket.getMaxMana();
         } else if (packet instanceof S2CSyncItemPacket syncPacket) {
-            net.reflact.client.managers.ClientItemManager.cacheItem(syncPacket.item());
+            net.reflact.client.managers.ClientItemManager.cacheItem(syncPacket.getItem());
         } else if (packet instanceof MapDataPacket mapPacket) {
-            net.reflact.client.map.MapTextureManager.INSTANCE.setMapData(mapPacket.colors(), mapPacket.width(), mapPacket.height());
+            net.reflact.client.map.MapTextureManager.INSTANCE.setMapData(mapPacket.getColors(), mapPacket.getWidth(), mapPacket.getHeight());
         }
     }
 
     public static void sendPacket(ReflactPacket packet) {
-        String id = PacketRegistry.getId(packet.getClass());
+        String id = PacketRegistry.INSTANCE.getId(packet.getClass());
         if (id == null) {
             LOGGER.warn("Tried to send unregistered packet: {}", packet.getClass().getName());
             return;

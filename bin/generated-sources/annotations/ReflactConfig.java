@@ -41,6 +41,19 @@ public class ReflactConfig extends ConfigWrapper<net.reflact.client.config.Refla
     private final Option<java.lang.Integer> radarX = this.optionForKey(this.keys.radarX);
     private final Option<java.lang.Integer> radarY = this.optionForKey(this.keys.radarY);
     private final Option<java.lang.Integer> radarSize = this.optionForKey(this.keys.radarSize);
+    private final Option<java.lang.Boolean> showHotbar = this.optionForKey(this.keys.showHotbar);
+    private final Option<java.lang.Integer> hotbarX = this.optionForKey(this.keys.hotbarX);
+    private final Option<java.lang.Integer> hotbarY = this.optionForKey(this.keys.hotbarY);
+    private final Option<java.lang.String> spellSlot1 = this.optionForKey(this.keys.spellSlot1);
+    private final Option<java.lang.String> spellSlot2 = this.optionForKey(this.keys.spellSlot2);
+    private final Option<java.lang.String> spellSlot3 = this.optionForKey(this.keys.spellSlot3);
+    private final Option<java.lang.String> spellSlot4 = this.optionForKey(this.keys.spellSlot4);
+    private final Option<java.lang.String> spellSlot5 = this.optionForKey(this.keys.spellSlot5);
+    private final Option<java.lang.String> spellSlot6 = this.optionForKey(this.keys.spellSlot6);
+    private final Option<java.lang.String> spellSlot7 = this.optionForKey(this.keys.spellSlot7);
+    private final Option<java.lang.String> spellSlot8 = this.optionForKey(this.keys.spellSlot8);
+    private final Option<java.lang.String> spellSlot9 = this.optionForKey(this.keys.spellSlot9);
+    private final Option<java.lang.String> spellSlot10 = this.optionForKey(this.keys.spellSlot10);
 
     private ReflactConfig() {
         super(net.reflact.client.config.ReflactConfigModel.class);
@@ -278,6 +291,110 @@ public class ReflactConfig extends ConfigWrapper<net.reflact.client.config.Refla
         radarSize.set(value);
     }
 
+    public boolean showHotbar() {
+        return showHotbar.value();
+    }
+
+    public void showHotbar(boolean value) {
+        showHotbar.set(value);
+    }
+
+    public int hotbarX() {
+        return hotbarX.value();
+    }
+
+    public void hotbarX(int value) {
+        hotbarX.set(value);
+    }
+
+    public int hotbarY() {
+        return hotbarY.value();
+    }
+
+    public void hotbarY(int value) {
+        hotbarY.set(value);
+    }
+
+    public java.lang.String spellSlot1() {
+        return spellSlot1.value();
+    }
+
+    public void spellSlot1(java.lang.String value) {
+        spellSlot1.set(value);
+    }
+
+    public java.lang.String spellSlot2() {
+        return spellSlot2.value();
+    }
+
+    public void spellSlot2(java.lang.String value) {
+        spellSlot2.set(value);
+    }
+
+    public java.lang.String spellSlot3() {
+        return spellSlot3.value();
+    }
+
+    public void spellSlot3(java.lang.String value) {
+        spellSlot3.set(value);
+    }
+
+    public java.lang.String spellSlot4() {
+        return spellSlot4.value();
+    }
+
+    public void spellSlot4(java.lang.String value) {
+        spellSlot4.set(value);
+    }
+
+    public java.lang.String spellSlot5() {
+        return spellSlot5.value();
+    }
+
+    public void spellSlot5(java.lang.String value) {
+        spellSlot5.set(value);
+    }
+
+    public java.lang.String spellSlot6() {
+        return spellSlot6.value();
+    }
+
+    public void spellSlot6(java.lang.String value) {
+        spellSlot6.set(value);
+    }
+
+    public java.lang.String spellSlot7() {
+        return spellSlot7.value();
+    }
+
+    public void spellSlot7(java.lang.String value) {
+        spellSlot7.set(value);
+    }
+
+    public java.lang.String spellSlot8() {
+        return spellSlot8.value();
+    }
+
+    public void spellSlot8(java.lang.String value) {
+        spellSlot8.set(value);
+    }
+
+    public java.lang.String spellSlot9() {
+        return spellSlot9.value();
+    }
+
+    public void spellSlot9(java.lang.String value) {
+        spellSlot9.set(value);
+    }
+
+    public java.lang.String spellSlot10() {
+        return spellSlot10.value();
+    }
+
+    public void spellSlot10(java.lang.String value) {
+        spellSlot10.set(value);
+    }
+
 
     public static class Keys {
         public final Option.Key showHud = new Option.Key("showHud");
@@ -307,6 +424,19 @@ public class ReflactConfig extends ConfigWrapper<net.reflact.client.config.Refla
         public final Option.Key radarX = new Option.Key("radarX");
         public final Option.Key radarY = new Option.Key("radarY");
         public final Option.Key radarSize = new Option.Key("radarSize");
+        public final Option.Key showHotbar = new Option.Key("showHotbar");
+        public final Option.Key hotbarX = new Option.Key("hotbarX");
+        public final Option.Key hotbarY = new Option.Key("hotbarY");
+        public final Option.Key spellSlot1 = new Option.Key("spellSlot1");
+        public final Option.Key spellSlot2 = new Option.Key("spellSlot2");
+        public final Option.Key spellSlot3 = new Option.Key("spellSlot3");
+        public final Option.Key spellSlot4 = new Option.Key("spellSlot4");
+        public final Option.Key spellSlot5 = new Option.Key("spellSlot5");
+        public final Option.Key spellSlot6 = new Option.Key("spellSlot6");
+        public final Option.Key spellSlot7 = new Option.Key("spellSlot7");
+        public final Option.Key spellSlot8 = new Option.Key("spellSlot8");
+        public final Option.Key spellSlot9 = new Option.Key("spellSlot9");
+        public final Option.Key spellSlot10 = new Option.Key("spellSlot10");
     }
 }
 

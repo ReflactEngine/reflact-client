@@ -4,7 +4,7 @@ plugins {
     `java-library`
 }
 
-version = "1.0.0"
+version = "2026.01.08-1.21.11"
 group = "net.reflact"
 
 repositories {
@@ -27,6 +27,9 @@ dependencies {
 
     // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:0.18.4")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Fabric API
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
